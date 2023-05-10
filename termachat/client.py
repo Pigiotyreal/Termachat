@@ -1,5 +1,6 @@
 import socket
 import threading
+import sys
 from time import sleep
 
 socket = socket.socket()
@@ -21,6 +22,11 @@ while True:
 def send():
     while True:
         message = input()
+        if message == "/exit":
+            socket.sendall(bytes(f"User '{user}' has disconnected.",'utf-8'))
+            socket.close()
+            sys.exit()
+            
         socket.sendall(bytes(f"{user}: {message}",'utf-8'))
         
 def receive():

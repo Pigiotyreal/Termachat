@@ -27,12 +27,7 @@ def clientThread(client):
         try:
             message = client.recv(1024).decode('utf-8')
             
-            if message == "/exit":
-                clients.remove(client)
-                client.close()
-                return
-            else:
-                globalsend(message)
+            globalsend(message)
         except:
             clients.remove(client)
             try:
