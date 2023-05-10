@@ -20,19 +20,20 @@ def clientThread(client):
     client.send(user.encode())
     
     while True:
-        message = client.recv(1024).decode()
-        print(f"{user}: {message}")
-        
-        if message == "exit":
-            clients.remove(client)
-            break
-        
-        for c in clients:
-            if not message == "exit":
+        try:
+            message = client.recv(1024).decode()
+            print(f"{user}: {message}")
+            
+            for c in clients:
                 c.send(f"{user}: {message}".encode())
-    
-    client.close()
-    print(f"User {user} disconnected")
+        except:
+            index = clients.index(client)
+            clients.remove(client)
+            client.close()
+            
+            user = user[index]
+            print(f"User {user} disconnected")
+            break
 
 while True:
     client, address = socket.accept()
