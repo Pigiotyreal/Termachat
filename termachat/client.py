@@ -32,7 +32,10 @@ def receive():
 print("Starting listener..")
 threading.Thread(target=receive).start()
 sleep(1)
+
 socket.sendall(bytes(f"User '{user}' has connected. Say hello!",'utf-8'))
 print("Starting sender..")
 sleep(1)
+
+print("Connected!")
 send()

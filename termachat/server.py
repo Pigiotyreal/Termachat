@@ -10,10 +10,7 @@ print(f"Socket binded to {port}")
 
 clients = []
 
-
 print("Socket listening")
-
-clients = []
 
 def globalsend(text):
     global clients
@@ -23,13 +20,11 @@ def globalsend(text):
 def clientThread(client):
     client.sendall("Welcome to the server".encode('utf-8'))
     
-    user = client.recv(1024).decode('utf-8')
-    
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
             
-            if message == "exit()":
+            if message == "/exit":
                 clients.remove(client)
                 client.close()
                 return
