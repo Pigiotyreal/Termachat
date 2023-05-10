@@ -11,11 +11,30 @@ socket.listen(5)
 print("Socket listening")
 
 clients = []
+users = []
 
 def clientThread(client):
     client.send("Welcome to the server".encode())
     
     user = client.recv(1024).decode()
+    
+    # Check if username is already taken, if so, add a number to the end, and validate the username
+    if user in users:
+        user = user + "1"
+        while user in users:
+            user = user[:-1] + str(int(user[-1]) + 1)
+    users.append(user)
+    
+    if len(user) > 25:
+        client.send("Username too long, max 25 chars".encode())
+        return
+    if len(user) < 3:
+        client.send("Username too short, min 3 chars".encode())
+        return
+    if not user.isalnum() or " " in user:
+        client.send("Username must be alphanumeric and cannot contain spaces".encode())
+        return
+    
     print(f"User {user} connected")
     client.send(user.encode())
     
