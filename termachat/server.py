@@ -2,66 +2,49 @@ import socket
 import threading
 
 socket = socket.socket()
-port = 8000
+port = 1026
+host = "127.0.0.1"
 
-socket.bind(("", port))
+socket.bind((host, port))
 print(f"Socket binded to {port}")
 
-socket.listen(5)
+clients = []
+
+
 print("Socket listening")
 
 clients = []
-users = []
+
+def globalsend(text):
+    global clients
+    for i in clients:
+        i.sendall(bytes(text,'utf-8'))
 
 def clientThread(client):
-    client.send("Welcome to the server".encode())
+    client.sendall("Welcome to the server".encode('utf-8'))
     
-    user = client.recv(1024).decode()
-    
-    if user in users:
-        user = user + "1"
-        while user in users:
-            user = user[:-1] + str(int(user[-1]) + 1)
-    users.append(user)
-    
-    if len(user) > 25:
-        client.send("Username too long, max 25 chars".encode())
-        return
-    if len(user) < 3:
-        client.send("Username too short, min 3 chars".encode())
-        return
-    if not user.isalnum() or " " in user:
-        client.send("Username must be alphanumeric and cannot contain spaces".encode())
-        return
-    
-    print(f"User {user} connected")
-    client.send(user.encode())
+    user = client.recv(1024).decode('utf-8')
     
     while True:
         try:
-            message = client.recv(1024).decode()
+            message = client.recv(1024).decode('utf-8')
             
-            if message == "/exit":
-                index = clients.index(client)
+            if message == "exit()":
                 clients.remove(client)
-                
-                user = user[index]
-                print(f"User {user} disconnected")
+                client.close()
                 return
-            
-            print(f"{user}: {message}")
-            
-            for c in clients:
-                c.send(f"{user}: {message}".encode())
+            else:
+                globalsend(message)
         except:
-            index = clients.index(client)
             clients.remove(client)
-            
-            user = user[index]
-            print(f"User {user} disconnected")
+            try:
+                client.close()
+            except:
+                pass
             return
 
 while True:
+    socket.listen(1)
     client, address = socket.accept()
     clients.append(client)
     threading.Thread(target=clientThread, args=(client,)).start()
