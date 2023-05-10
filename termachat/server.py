@@ -18,7 +18,6 @@ def clientThread(client):
     
     user = client.recv(1024).decode()
     
-    # Check if username is already taken, if so, add a number to the end, and validate the username
     if user in users:
         user = user + "1"
         while user in users:
@@ -41,6 +40,15 @@ def clientThread(client):
     while True:
         try:
             message = client.recv(1024).decode()
+            
+            if message == "/exit":
+                index = clients.index(client)
+                clients.remove(client)
+                
+                user = user[index]
+                print(f"User {user} disconnected")
+                return
+            
             print(f"{user}: {message}")
             
             for c in clients:
@@ -48,11 +56,10 @@ def clientThread(client):
         except:
             index = clients.index(client)
             clients.remove(client)
-            client.close()
             
             user = user[index]
             print(f"User {user} disconnected")
-            break
+            return
 
 while True:
     client, address = socket.accept()
