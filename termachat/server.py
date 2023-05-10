@@ -1,5 +1,6 @@
 import socket
 import threading
+from datetime import datetime
 
 socket = socket.socket()
 port = 1026
@@ -14,8 +15,10 @@ print("Socket listening")
 
 def globalsend(text):
     global clients
-    for i in clients:
-        i.sendall(bytes(text,'utf-8'))
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    text = f"[{timestamp}] {text}"
+    for client in clients:
+        client.sendall(text.encode('utf-8'))
 
 def clientThread(client):
     client.sendall("Welcome to the server".encode('utf-8'))

@@ -27,7 +27,8 @@ def receive():
     while True:
         message = socket.recv(1024).decode('utf-8')
         if not message.startswith(user):
-            print(message)
+            timestamp, message = message.split("] ", 1)
+            print(f"{timestamp}] {message}")
         
 print("Starting listener..")
 threading.Thread(target=receive).start()
