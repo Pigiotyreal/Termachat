@@ -1,4 +1,5 @@
 import socket
+import threading
 
 socket = socket.socket()
 port = 8000
@@ -9,32 +10,31 @@ print(f"Socket binded to {port}")
 socket.listen(5)
 print("Socket listening")
 
+clients = []
+
+def clientThread(client):
+    client.send("Welcome to the server".encode())
+    
+    user = client.recv(1024).decode()
+    print(f"User {user} connected")
+    client.send(user.encode())
+    
+    while True:
+        message = client.recv(1024).decode()
+        print(f"{user}: {message}")
+        
+        if message == "exit":
+            clients.remove(client)
+            break
+        
+        for c in clients:
+            if not message == "exit":
+                c.send(f"{user}: {message}".encode())
+    
+    client.close()
+    print(f"User {user} disconnected")
+
 while True:
-    conn, addr = socket.accept()
-    print(f"Got a connection from {addr}")
-    
-    conn.send("Connected!".encode())
-    
-    user = conn.recv(1024).decode()
-    
-    if len(user) < 3:
-        conn.send("Invalid username, min chars 3".encode())
-        conn.close()
-        continue
-    if len(user) > 35:
-        conn.send("Invalid username, max chars 35".encode())
-        conn.close()
-        continue
-    if user.isalnum() == False:
-        conn.send("Invalid username, alphanumeric only".encode())
-        conn.close()
-        continue
-    if user.isspace() == True:
-        conn.send("Invalid username, no spaces".encode())
-        conn.close()
-        continue
-    
-    conn.send(user.encode())
-    
-    conn.close()
-    break
+    client, address = socket.accept()
+    clients.append(client)
+    threading.Thread(target=clientThread, args=(client,)).start()
