@@ -28,23 +28,31 @@ def send():
             sys.exit()
         if message == "/help":
             print("Commands:\n/exit - Disconnect from the server")
+            print("/help - Show this help message")
         else:   
-            socket.sendall(bytes(f"{user}: {message}",'utf-8'))
+            try:
+                socket.sendall(bytes(f"{user}: {message}",'utf-8'))
+            except:
+                print("Error sending message to server.")
         
 def receive():
     while True:
-        message = socket.recv(1024).decode('utf-8')
-        if not message.startswith(user):
-            timestamp, message = message.split("] ", 1)
-            print(f"{timestamp}] {message}")
+        try:
+            message = socket.recv(1024).decode('utf-8')
+            if not message.startswith(user):
+                timestamp, message = message.split("] ", 1)
+                print(f"{timestamp}] {message}")
+        except:
+            print("Error receiving message from server.")
         
 print("Starting listener..")
 threading.Thread(target=receive).start()
-sleep(1)
+sleep(0.25)
 
 socket.sendall(bytes(f"User '{user}' has connected. Say hello!",'utf-8'))
+
 print("Starting sender..")
-sleep(1)
+sleep(0.25)
 
 print("Connected!")
 send()

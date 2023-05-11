@@ -14,11 +14,14 @@ clients = []
 print("Socket listening")
 
 def globalsend(text):
-    global clients
-    timestamp = datetime.now().strftime("%H:%M:%S")
-    text = f"[{timestamp}] {text}"
-    for client in clients:
-        client.sendall(text.encode('utf-8'))
+    try:
+        global clients
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        text = f"[{timestamp}] {text}"
+        for client in clients:
+            client.sendall(text.encode('utf-8'))
+    except:
+        print("Error sending message to clients.")
 
 def clientThread(client):
     client.sendall("Welcome to the server".encode('utf-8'))
