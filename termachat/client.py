@@ -26,8 +26,10 @@ def send():
             socket.sendall(bytes(f"User '{user}' has disconnected.",'utf-8'))
             socket.close()
             sys.exit()
-            
-        socket.sendall(bytes(f"{user}: {message}",'utf-8'))
+        if message == "/help":
+            print("Commands:\n/exit - Disconnect from the server")
+        else:   
+            socket.sendall(bytes(f"{user}: {message}",'utf-8'))
         
 def receive():
     while True:
