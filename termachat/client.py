@@ -1,11 +1,15 @@
 import socket
 import threading
 import sys
-from time import sleep
+import time
+from time import sleep, time
 
 socket = socket.socket()
 port = 1026
 host = "127.0.0.1"
+
+lastTime = 0
+messageCount = 0
 
 print("Connecting..")
 socket.connect((host, port))
@@ -20,6 +24,9 @@ while True:
         break
 
 def send():
+    global lastTime
+    global messageCount
+    
     while True:
         message = input()
         if message == "/exit":
@@ -34,9 +41,20 @@ def send():
             print("\n"*100)
         elif len(message) > 612:
             print("Message must be 612 characters or less.")
-        else:   
+        elif len(message) < 1:
+            print("Message must be 1 character or more.")
+        else:
+            currTime = time()
+            timeLast = currTime - lastTime
+            
+            if timeLast < 1 and messageCount > 5:
+                print("You are sending messages too fast.")
+                continue
+            
             try:
                 socket.sendall(bytes(f"{user}: {message}",'utf-8'))
+                messageCount += 1
+                lastTime = currTime
             except:
                 print("Error sending message to server.")
         
