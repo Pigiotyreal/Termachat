@@ -26,9 +26,14 @@ def send():
             socket.sendall(bytes(f"User '{user}' has disconnected.",'utf-8'))
             socket.close()
             sys.exit()
-        if message == "/help":
+        elif message == "/help":
             print("Commands:\n/exit - Disconnect from the server")
             print("/help - Show this help message")
+            print("/clear - Clears all visible messages")
+        elif message == "/clear":
+            print("\n"*100)
+        elif len(message) > 612:
+            print("Message must be 612 characters or less.")
         else:   
             try:
                 socket.sendall(bytes(f"{user}: {message}",'utf-8'))
