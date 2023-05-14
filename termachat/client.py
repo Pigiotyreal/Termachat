@@ -58,6 +58,19 @@ def send():
                     print("File does not exist.")
             except:
                 print("Error uploading file.")
+        elif message.startswith("/download "):
+            try:
+                filename = message.split(" ", 1)[1]
+                if os.path.isfile(f"files/{filename}"):
+                    with open(f"files/{filename}", "rb") as f:
+                        with open(filename, "wb") as f2:
+                            f2.write(f.read())
+                        
+                    print("File downloaded successfully.")
+                else:
+                    print("File does not exist.")
+            except:
+                print("Error downloading file.")
             
         elif len(message) > 612:
             print("Message must be 612 characters or less.")
