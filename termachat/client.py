@@ -2,6 +2,8 @@ import socket
 import threading
 import sys
 import time
+import os
+import shutil
 from time import sleep, time
 
 socket = socket.socket()
@@ -39,6 +41,24 @@ def send():
             print("/clear - Clears all visible messages")
         elif message == "/clear":
             print("\n"*100)
+        elif message.startswith("/upload "):
+            try:
+                filename = message.split(" ", 1)[1]
+                if os.path.isfile(filename):
+                    if os.path.getsize(filename) > 2097152:
+                        print("File must be under 2MB.")
+                        continue
+                    with open(filename, "rb") as f:
+                        socket.sendall(f.read())
+
+                    shutil.copy(filename, "files")
+                    
+                    print("File uploaded successfully.")
+                else:
+                    print("File does not exist.")
+            except:
+                print("Error uploading file.")
+            
         elif len(message) > 612:
             print("Message must be 612 characters or less.")
         elif len(message) < 1:
